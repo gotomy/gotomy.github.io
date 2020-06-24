@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Mosh 6小时Python教程 | Coding人生</title>
+    <meta property="og:title" content="Mosh 6小时Python教程 - Coding人生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2020-05-17T12:50:06&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-05-17T12:50:06&#43;08:00'>
+        
+    <meta name="Keywords" content="java, spring boot, docker, kubernetes">
+    <meta name="description" content="Mosh 6小时Python教程">
+        
+    <meta name="author" content="gotomy">
+    <meta property="og:url" content="http://gotomy.github.io/post/python/python_6hour/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container-header">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://gotomy.github.io">
+                        Coding人生
+                    </a>
+                
+                <p class="description">唯有日积月累，方可成就非凡</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://gotomy.github.io">首页</a>
+                    
+                    <a  href="http://gotomy.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://gotomy.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 16px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 200px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#print">print</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li><a href="#getting-input">Getting Input</a></li>
+    <li><a href="#type-conversion">Type Conversion</a></li>
+    <li><a href="#strings">Strings</a></li>
+    <li><a href="#formatted-strings">Formatted Strings</a></li>
+    <li><a href="#string-methods">String Methods</a></li>
+    <li><a href="#arithmetic-operations">Arithmetic Operations</a></li>
+    <li><a href="#operator-precedence">Operator Precedence</a></li>
+    <li><a href="#math-functions">Math Functions</a></li>
+    <li><a href="#if-statements">If Statements</a></li>
+    <li><a href="#logical-operators">Logical Operators</a></li>
+    <li><a href="#comparison-operators">Comparison Operators</a></li>
+    <li><a href="#while-loops">While Loops</a></li>
+    <li><a href="#for-loops">For Loops</a></li>
+    <li><a href="#nested-loops">Nested Loops</a></li>
+    <li><a href="#lists">Lists</a></li>
+    <li><a href="#2d-lists">2D Lists</a></li>
+    <li><a href="#list-methods">List Methods</a></li>
+    <li><a href="#tuples">Tuples</a></li>
+    <li><a href="#unpacking">unpacking</a></li>
+    <li><a href="#dictionaries">Dictionaries</a></li>
+    <li><a href="#emoji-converter">Emoji Converter</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if(leftPos<220){
+                postToc.css({"width":leftPos-10,"margin-left":(0-leftPos)})
+            }
+
+            var t = postToc.offset().top,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+    })
+</script>
+    <article class="post">
+        <header class="article-info clearfix">
+            <h1>Mosh 6小时Python教程</h1>
+            <div>
+                
+                <p class="post-reads">
+                    <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span><span>阅读</span></span>
+                </p>
+                
+                <p class="post-time">发表于：2020年5月17日</p>
+            </div>
+        </header>
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="print">print</h2>
+<p>用于终端输出</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;Mosh Hamedani&#39;</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;o----&#39;</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39; ||||&#39;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><p>python的执行是一行行执行的</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#998;font-style:italic"># 输出10个*</span>
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;*&#39;</span> <span style="color:#000;font-weight:bold">*</span> <span style="color:#099">10</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="variables">Variables</h2>
+<p>定义变量</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">price <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">10</span>
+rating <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">4.9</span>
+name <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Mosh&#39;</span>
+is_published <span style="color:#000;font-weight:bold">=</span> <span style="color:#999">True</span>
+<span style="color:#000;font-weight:bold">print</span>(price)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="getting-input">Getting Input</h2>
+<p>获取输入</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">name <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">input</span>(<span style="color:#d14">&#39;What is your name? &#39;</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;Hi &#39;</span> <span style="color:#000;font-weight:bold">+</span> name)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="type-conversion">Type Conversion</h2>
+<p>类型转换</p>
+<p>所有通过 input()接受的都是str型，在运算的时候需要转换</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">birth_year <span style="color:#000;font-weight:bold">=</span> <span style="color:#0086b3">input</span>(<span style="color:#d14">&#39;Birth year: &#39;</span>)
+age <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">2019</span> <span style="color:#000;font-weight:bold">-</span> <span style="color:#0086b3">int</span>(birth_year)
+<span style="color:#000;font-weight:bold">print</span>(age)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#0086b3">type</span>(age))
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>int()</li>
+<li>float()</li>
+<li>bool()</li>
+</ul>
+<p>可以通过type来输出变量的类型</p>
+<h2 id="strings">Strings</h2>
+<p>可以通过单引号和双引号的组合来定义不同的字符串</p>
+<p>可以通过三引号定义文本段</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">course <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;Python&#39;s Course for Beginners&#34;</span>
+<span style="color:#000;font-weight:bold">print</span>(course)
+cousre1 <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Python for &#34;Beginners&#34;&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(course1)
+email <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;&#39;&#39;
+</span><span style="color:#d14">Hi John,
+</span><span style="color:#d14">
+</span><span style="color:#d14">Here is our first email
+</span><span style="color:#d14">
+</span><span style="color:#d14">Thank you
+</span><span style="color:#d14">The suppot team
+</span><span style="color:#d14">&#39;&#39;&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(email)
+
+</code></pre></td></tr></table>
+</div>
+</div><p>通过 []获取字符串的字符</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">course <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Python for Beginners&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(course[<span style="color:#099">0</span>])  <span style="color:#998;font-style:italic">#P</span>
+<span style="color:#000;font-weight:bold">print</span>(course[<span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>]) <span style="color:#998;font-style:italic">#s</span>
+<span style="color:#000;font-weight:bold">print</span>(course[<span style="color:#099">0</span>:<span style="color:#099">3</span>])  <span style="color:#998;font-style:italic"># Pyt</span>
+<span style="color:#000;font-weight:bold">print</span>(course[<span style="color:#099">0</span>:])  <span style="color:#998;font-style:italic"># Python for Beginners</span>
+<span style="color:#000;font-weight:bold">print</span>(course[<span style="color:#099">1</span>:])  <span style="color:#998;font-style:italic"># ython for Beginners</span>
+<span style="color:#000;font-weight:bold">print</span>(course[:<span style="color:#099">5</span>])   <span style="color:#998;font-style:italic"># Pytho</span>
+another <span style="color:#000;font-weight:bold">=</span> course[:]  <span style="color:#998;font-style:italic"># 字符串的拷贝</span>
+
+name <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Jennifer&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(name[<span style="color:#099">1</span>:<span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>])  <span style="color:#998;font-style:italic"># ennife</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="formatted-strings">Formatted Strings</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">first <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;John&#39;</span>
+last <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Smith&#39;</span>
+msg <span style="color:#000;font-weight:bold">=</span> f<span style="color:#d14">&#39;{first} [{last}] is a coder&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(message)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="string-methods">String Methods</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">course <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#39;Python for Beginners&#39;</span>
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#0086b3">len</span>(course))   <span style="color:#998;font-style:italic">#字符串的长度</span>
+<span style="color:#000;font-weight:bold">print</span>(course<span style="color:#000;font-weight:bold">.</span>upper())
+<span style="color:#000;font-weight:bold">print</span>(course<span style="color:#000;font-weight:bold">.</span>find(<span style="color:#d14">&#39;P&#39;</span>)) <span style="color:#998;font-style:italic"># 0</span>
+<span style="color:#000;font-weight:bold">print</span>(course<span style="color:#000;font-weight:bold">.</span>repalce(<span style="color:#d14">&#39;Beginners&#39;</span>, <span style="color:#d14">&#39;Absolute Beginners&#39;</span>))
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;Python&#39;</span> <span style="color:#000;font-weight:bold">in</span> course) <span style="color:#998;font-style:italic"># True</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>in Operator一个字符串在不在另一个中</p>
+<h2 id="arithmetic-operations">Arithmetic Operations</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">print</span>(<span style="color:#099">10</span> <span style="color:#000;font-weight:bold">/</span> <span style="color:#099">3</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#099">10</span> <span style="color:#000;font-weight:bold">//</span> <span style="color:#099">3</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#099">10</span> <span style="color:#000;font-weight:bold">%</span> <span style="color:#099">3</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#099">10</span> <span style="color:#000;font-weight:bold">**</span> <span style="color:#099">3</span>)
+
+x <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">10</span>
+x <span style="color:#000;font-weight:bold">=</span> x <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">3</span>
+<span style="color:#000;font-weight:bold">print</span>(x)
+
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="operator-precedence">Operator Precedence</h2>
+<pre><code>x = 10 +  3 * 2
+print(x)
+
+</code></pre><h2 id="math-functions">Math Functions</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">x <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">2.9</span>
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#0086b3">round</span>(x))
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#0086b3">abs</span>(<span style="color:#000;font-weight:bold">-</span><span style="color:#099">2.9</span>))
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="if-statements">If Statements</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">is_hot <span style="color:#000;font-weight:bold">=</span> <span style="color:#999">False</span>
+is_cold <span style="color:#000;font-weight:bold">=</span> <span style="color:#999">True</span>
+<span style="color:#000;font-weight:bold">if</span> is_hot:
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;It&#39;s a hot day&#34;</span>)
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;Drink plenty of water&#34;</span>)
+<span style="color:#000;font-weight:bold">elif</span> is_code:
+ 	<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;It&#39;s a cloud day&#34;</span>)
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;Wear warm clothes&#34;</span>)
+<span style="color:#000;font-weight:bold">else</span>:
+	<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;It&#39;s a lovely day&#34;</span>)
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;Enjoy your day&#34;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="logical-operators">Logical Operators</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">has_high_income <span style="color:#000;font-weight:bold">=</span> <span style="color:#999">True</span>
+has_good_credit <span style="color:#000;font-weight:bold">=</span> <span style="color:#999">True</span>
+<span style="color:#000;font-weight:bold">if</span> has_high_income <span style="color:#000;font-weight:bold">and</span> has_good_credit:
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#39;Eligible for loan&#39;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>and both</li>
+<li>or at least one</li>
+<li>not:</li>
+</ul>
+<h2 id="comparison-operators">Comparison Operators</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">temperature <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">30</span>
+<span style="color:#000;font-weight:bold">if</span> temperature <span style="color:#000;font-weight:bold">&gt;</span> <span style="color:#099">30</span>:
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;It&#39;s a hot day&#34;</span>)
+<span style="color:#000;font-weight:bold">else</span>:
+  <span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;It&#39;s not a hot day&#34;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="while-loops">While Loops</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">i <span style="color:#000;font-weight:bold">=</span> <span style="color:#099">1</span>
+<span style="color:#000;font-weight:bold">while</span> i <span style="color:#000;font-weight:bold">&lt;=</span> <span style="color:#099">5</span>:
+  <span style="color:#000;font-weight:bold">print</span>(i)
+  i <span style="color:#000;font-weight:bold">=</span> i <span style="color:#000;font-weight:bold">+</span> <span style="color:#099">1</span>
+<span style="color:#000;font-weight:bold">print</span>(<span style="color:#d14">&#34;Done&#34;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="for-loops">For Loops</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">for</span> item <span style="color:#000;font-weight:bold">in</span> <span style="color:#d14">&#39;python&#39;</span>:
+  <span style="color:#000;font-weight:bold">print</span>(item)
+
+  
+<span style="color:#000;font-weight:bold">for</span> item <span style="color:#000;font-weight:bold">in</span> <span style="color:#0086b3">range</span>(<span style="color:#099">10</span>):
+  <span style="color:#000;font-weight:bold">print</span>(item)
+
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="nested-loops">Nested Loops</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#000;font-weight:bold">for</span> x <span style="color:#000;font-weight:bold">in</span> <span style="color:#0086b3">range</span>(<span style="color:#099">4</span>):
+  <span style="color:#000;font-weight:bold">for</span> y <span style="color:#000;font-weight:bold">in</span> <span style="color:#0086b3">range</span>(<span style="color:#099">3</span>):
+    <span style="color:#000;font-weight:bold">print</span>(f<span style="color:#d14">&#39;({x},{y})&#39;</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="lists">Lists</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">names <span style="color:#000;font-weight:bold">=</span> [<span style="color:#d14">&#39;John&#39;</span>, <span style="color:#d14">&#39;Bob&#39;</span>, <span style="color:#d14">&#39;Mosh&#39;</span>, <span style="color:#d14">&#39;Sarah&#39;</span>, <span style="color:#d14">&#39;Mary&#39;</span>]
+<span style="color:#000;font-weight:bold">print</span>(names)
+<span style="color:#000;font-weight:bold">print</span>(names[<span style="color:#099">0</span>])
+<span style="color:#000;font-weight:bold">print</span>(names[<span style="color:#000;font-weight:bold">-</span><span style="color:#099">1</span>])
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="2d-lists">2D Lists</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">matrix <span style="color:#000;font-weight:bold">=</span> [
+  [<span style="color:#099">1</span>,<span style="color:#099">2</span>,<span style="color:#099">3</span>],
+  [<span style="color:#099">4</span>,<span style="color:#099">5</span>,<span style="color:#099">6</span>],
+  [<span style="color:#099">7</span>,<span style="color:#099">8</span>,<span style="color:#099">9</span>]
+]
+
+<span style="color:#000;font-weight:bold">print</span>(matrix[<span style="color:#099">0</span>][<span style="color:#099">0</span>])
+
+<span style="color:#000;font-weight:bold">for</span> row <span style="color:#000;font-weight:bold">in</span> matrix:
+  <span style="color:#000;font-weight:bold">for</span> item <span style="color:#000;font-weight:bold">in</span> row:
+    <span style="color:#000;font-weight:bold">print</span>(item)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="list-methods">List Methods</h2>
+<ul>
+<li>
+<p>append</p>
+</li>
+<li>
+<p>insert</p>
+</li>
+<li>
+<p>remove</p>
+</li>
+<li>
+<p>clear</p>
+</li>
+<li>
+<p>pop</p>
+</li>
+<li>
+<p>index</p>
+</li>
+<li>
+<p>in</p>
+</li>
+<li>
+<p>count</p>
+</li>
+<li>
+<p>sort</p>
+</li>
+<li>
+<p>reverse</p>
+</li>
+<li>
+<p>Copy</p>
+</li>
+</ul>
+<h2 id="tuples">Tuples</h2>
+<p>tuples不是修改的</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">numbers <span style="color:#000;font-weight:bold">=</span> (<span style="color:#099">1</span>,<span style="color:#099">2</span>,<span style="color:#099">3</span>)
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="unpacking">unpacking</h2>
+<p>解压缩</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">coordinates <span style="color:#000;font-weight:bold">=</span> (<span style="color:#099">1</span>, <span style="color:#099">2</span>, <span style="color:#099">3</span>)
+x,y,z <span style="color:#000;font-weight:bold">=</span> coordinates
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="dictionaries">Dictionaries</h2>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">customer <span style="color:#000;font-weight:bold">=</span> {
+  <span style="color:#d14">&#34;name&#34;</span>: <span style="color:#d14">&#34;John Smith&#34;</span>,
+  <span style="color:#d14">&#34;age&#34;</span>: <span style="color:#099">30</span>,
+  <span style="color:#d14">&#34;is_verified&#34;</span>: <span style="color:#999">True</span>
+}
+<span style="color:#000;font-weight:bold">print</span>(customer[<span style="color:#d14">&#34;name&#34;</span>])
+<span style="color:#000;font-weight:bold">print</span>(customer<span style="color:#000;font-weight:bold">.</span>get(<span style="color:#d14">&#34;birthdate&#34;</span>))
+
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="emoji-converter">Emoji Converter</h2>
+
+        </div>
+
+        
+
+
+        <div class="post-meta meta-tags border-top">
+            
+            <ul class="clearfix">
+                
+                <li><a href='http://gotomy.github.io/tags/python'>python</a></li>
+                
+            </ul>
+            
+        </div>
+
+        
+
+
+
+
+<nav class="article-nav clearfix">
+    
+    <div class="prev">
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">
+        <strong>上一篇：</strong><br>
+        <span>        Java时间处理</span>
+    </a>
+   </div>
+   
+   
+   <div class="next">
+    <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">
+        <strong>下一篇：</strong><br> 
+        <span>SkyWalking分布式链路追踪        </span>
+    </a>
+   </div>
+   
+</nav>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://gotomy.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">kubernetes最佳实践——来自谷歌的经验</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">Segment转向微服务后重新回归单体分享</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">SkyWalking分布式链路追踪</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">Mosh 6小时Python教程</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">Java时间处理</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">RabbitMq的工作模式</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">docker镜像国内加速</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://gotomy.github.io/categories/devops/">devops (2)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/docker/">docker (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/java/">Java (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/kubernetes/">kubernetes (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/mq/">mq (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/python/">python (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://gotomy.github.io/tags/apm/">APM</a>
+    
+    <a href="http://gotomy.github.io/tags/datetime/">DateTime</a>
+    
+    <a href="http://gotomy.github.io/tags/docker/">docker</a>
+    
+    <a href="http://gotomy.github.io/tags/java/">Java</a>
+    
+    <a href="http://gotomy.github.io/tags/kubernetes/">kubernetes</a>
+    
+    <a href="http://gotomy.github.io/tags/microservice/">microservice</a>
+    
+    <a href="http://gotomy.github.io/tags/monolithic/">monolithic</a>
+    
+    <a href="http://gotomy.github.io/tags/mq/">MQ</a>
+    
+    <a href="http://gotomy.github.io/tags/proxy/">proxy</a>
+    
+    <a href="http://gotomy.github.io/tags/python/">python</a>
+    
+    <a href="http://gotomy.github.io/tags/rabbit/">Rabbit</a>
+    
+    <a href="http://gotomy.github.io/tags/skywalking/">SkyWalking</a>
+    
+    <a href="http://gotomy.github.io/tags/time/">Time</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://gotomy.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container-footer">
+        &copy; 2020 <a href="http://gotomy.github.io">Coding人生 By gotomy</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/gotomy/maupassant-hugo" target="_blank">maupassant</a>
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+
+</html>

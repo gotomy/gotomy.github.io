@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>kubernetes最佳实践——来自谷歌的经验 | Coding人生</title>
+    <meta property="og:title" content="kubernetes最佳实践——来自谷歌的经验 - Coding人生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2020-06-15T22:55:06&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-06-15T22:55:06&#43;08:00'>
+        
+    <meta name="Keywords" content="java, spring boot, docker, kubernetes">
+    <meta name="description" content="kubernetes最佳实践——来自谷歌的经验">
+        
+    <meta name="author" content="gotomy">
+    <meta property="og:url" content="http://gotomy.github.io/post/k8s/k8s_best_practice/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container-header">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://gotomy.github.io">
+                        Coding人生
+                    </a>
+                
+                <p class="description">唯有日积月累，方可成就非凡</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://gotomy.github.io">首页</a>
+                    
+                    <a  href="http://gotomy.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://gotomy.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 16px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 200px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#builing-small-containers-构造小的容器">Builing Small Containers 构造小的容器</a></li>
+    <li><a href="#organizing-kubernetes-with-namespaces-以命名空间组织资源">Organizing Kubernetes with Namespaces 以命名空间组织资源</a></li>
+    <li><a href="#kubernetes-health-checks-with-readiness-and-liveness-probes-就绪和存活健康检查">Kubernetes Health Checks with Readiness and Liveness Probes 就绪和存活健康检查</a></li>
+    <li><a href="#setting-resource-requests-and-limits-in-kubernetes--设置资源的请求和限制大小">Setting Resource Requests And Limits in Kubernetes  设置资源的请求和限制大小</a></li>
+    <li><a href="#terminating-with-grace-优化关闭">Terminating with Grace 优化关闭</a></li>
+    <li><a href="#mapping-external-services-映射外部服务">Mapping External Services 映射外部服务</a></li>
+    <li><a href="#upgrading-your-cluster-with-zero-downtime-零停机升级群集">Upgrading your Cluster with Zero Downtime 零停机升级群集</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if(leftPos<220){
+                postToc.css({"width":leftPos-10,"margin-left":(0-leftPos)})
+            }
+
+            var t = postToc.offset().top,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+    })
+</script>
+    <article class="post">
+        <header class="article-info clearfix">
+            <h1>kubernetes最佳实践——来自谷歌的经验</h1>
+            <div>
+                
+                <p class="post-reads">
+                    <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span><span>阅读</span></span>
+                </p>
+                
+                <p class="post-time">发表于：2020年6月15日</p>
+            </div>
+        </header>
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="builing-small-containers-构造小的容器">Builing Small Containers 构造小的容器</h2>
+<p>构建小而牢固的容器镜像</p>
+<p>指定你的基础镜像，加入你的改动，然后构建你的容器 ，但使用默认的基础镜像会产生充满安全漏洞的大型镜像，大多Docker镜像使用Debian或Ubuntu为基础镜像，虽然对兼容性和适应性有许多好处，但这些基础镜像会为你的容器增加上百兆字节的额外开销，例如，简单的 Node.js和Go&quot;Hello World&quot;的应用程序有大概700兆字节， 你的应用程序大概只有几个兆字节，所以，所有这些的额外开销不仅浪费空间并且会隐藏许多安全漏洞和程序bug. 如何构建小的容器</p>
+<ol>
+<li>使用小的基础镜像 Small Base Images</li>
+</ol>
+<p>选择官方提供的基于Alpine的基础镜像，如果没有，可以通过使用原始的Alpine Linux为一个起点来建造自己的容器。这可以对容器有一个全面的控制</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> node:alpine</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">WORKDIR</span><span style="color:#d14"> /app</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">COPY</span> package.json /app/package.json<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> npm install --production<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">COPY</span> server.js /app/server.js<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">EXPOSE</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">CMD</span> npm start<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
+<li>使用Builder Pattern</li>
+</ol>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> golang:alpine</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">WORKDIR</span><span style="color:#d14"> /app</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ADD</span> . /app<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> <span style="color:#0086b3">cd</span> /app <span style="color:#000;font-weight:bold">&amp;&amp;</span> go build -o goapp<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">EXPOSE</span><span style="color:#d14"> 8080</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ENTRYPOINT</span> ./goapp<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>可以使用Builder Pattern进一步的减少空间</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> golang:alpine AS build-env</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">WORKDIR</span><span style="color:#d14"> /app</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ADD</span> . /app<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> <span style="color:#0086b3">cd</span> /app <span style="color:#000;font-weight:bold">&amp;&amp;</span> go build -o goapp<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">FROM</span><span style="color:#d14"> alpine</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">RUN</span> apk update <span style="color:#000;font-weight:bold">&amp;&amp;</span> apk add ca-certificates <span style="color:#000;font-weight:bold">&amp;&amp;</span> rm -rf /var/cache/apk/*<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">WORKDIR</span><span style="color:#d14"> /app</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">COPY</span> --from<span style="color:#000;font-weight:bold">=</span>build-env /app/goapp /app<span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">EXPOSE</span><span style="color:#d14"> 8080</span><span style="color:#a61717;background-color:#e3d2d2">
+</span><span style="color:#a61717;background-color:#e3d2d2"></span><span style="color:#000;font-weight:bold">ENTRYPOINT</span> ./goapp<span style="color:#a61717;background-color:#e3d2d2">
+</span></code></pre></td></tr></table>
+</div>
+</div><p>原始的Alpine Linux没有安装任何的SSL证书，这将会使导致许多Https的API请求失败，所以需要安装CA证书。</p>
+<p>多阶段构建</p>
+<p>小容器带来的好处：</p>
+<ul>
+<li>性能
+<ul>
+<li>构建的时间更短</li>
+<li>push的时间更短</li>
+<li>pull的时间更短，当一个节点down的时候，pull的时间越短服务可用的时间越及时</li>
+</ul>
+</li>
+<li>安全
+<ul>
+<li>小型容器的漏洞更小</li>
+</ul>
+</li>
+</ul>
+<h2 id="organizing-kubernetes-with-namespaces-以命名空间组织资源">Organizing Kubernetes with Namespaces 以命名空间组织资源</h2>
+<p>命名空间可以认为是你在Kubernetes集群中的虚拟集群。</p>
+<p>Kubernetes默认会包括三个命名空间：</p>
+<ul>
+<li>default</li>
+<li>kube-system 不去管理kube-system是一个好主意</li>
+<li>kube-public 很少使用</li>
+</ul>
+<p>创建命名空间</p>
+<pre><code>$ kubectl create namespace test
+
+&gt; test.yaml
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: test
+  labels:
+    name: test
+    
+$ kubectl apply -f test.yaml
+</code></pre><p>命名空间只是一个逻辑上的隔离，一个命名空间的服务可以轻松的访问其他命名空间的服务</p>
+<p>kubernetes中的服务使用通用DNS模式暴露其服务端点</p>
+<pre><code>&lt;Service Name&gt;.&lt;Namespace Name&gt;.svc.cluster.local
+</code></pre><p>Kubernetes会将服务解析成完成的以上路径</p>
+<p>如果在同一个Namespace时只需要写<code>Service Name</code>，如果需要访问其他的命名空间中的服务则是<code>&lt;Service Name&gt;.&lt;Namespace Name&gt;</code></p>
+<p>Kubernetes允许通过网络策略来实现对一个命名空间进行隔离和限制访问。<code>NetWork Policies</code></p>
+<p>到底需要创建多少命名空间：</p>
+<ul>
+<li>The Small Team(5-10)</li>
+</ul>
+<p>可以使用default命名空间</p>
+<ul>
+<li>Rapidly growing team</li>
+</ul>
+<p>以每个team来命名命名空间简化管理：如Team Bar, Team Baz, Team Foo</p>
+<ul>
+<li>The Large Company</li>
+</ul>
+<p>强烈建议使用Spinnaker这种能支持Kubernetes的CD系统，每个团队可能需要多个命名空间</p>
+<ul>
+<li>Enterprise</li>
+</ul>
+<p>使用多个物理集群，每个物理集群规划多个命名空间。</p>
+<h2 id="kubernetes-health-checks-with-readiness-and-liveness-probes-就绪和存活健康检查">Kubernetes Health Checks with Readiness and Liveness Probes 就绪和存活健康检查</h2>
+<p>分布式系统可能很难管理，最大的原因是：许多移动的部件都必须正常工作才能使系统功能正常，如果有一小部分失常，系统会检测到，绕过去，然后修正它，这些都需要自动完成。</p>
+<p>Kubernetes默认情况下：当Pod中的所有容器启动后，Kubernetes将会开始向该Pod发送流量，并在容器崩溃时重新启动容器。</p>
+<p>Kubernetes有两种类型的健康检查：</p>
+<ul>
+<li>Readiness探针：让kubernetes知道你的应用何时已准备就绪，可以对外提供服务，Kubernete会在允许服务将流量发送到Pod之前，确保readiness通过检查。如果readiness探针失败，会停止赂这个pod发送流量</li>
+<li>Liveness探针：让Kubernetes知道你的应用程序是否存活，如果你的应用程序仍然存活，则Kubernetes不会去管，如果你的应用程序已经死了，那么kubernetes会删除这个pod，并启动一个新的替换它</li>
+</ul>
+<p>探针的类型：</p>
+<ul>
+<li>HTTP</li>
+</ul>
+<pre><code>spec:
+  containers:
+    livenessProbe:
+      httpGet:
+        path: /healthz
+        port: 8080
+</code></pre><p>如果收到是的 200或300范围内的HTTP响应，由会将其标识为健康</p>
+<ul>
+<li>Command</li>
+</ul>
+<pre><code>spec:
+  containers:
+    - name: liveness
+      livenessProbe:
+        exec:
+          command:
+            - myprogram
+</code></pre><p>kubernetes会在容器中运行一个命令，如果命令返回码为0，则容器将标识为健康</p>
+<ul>
+<li>TCP</li>
+</ul>
+<pre><code>spec:
+  containers:
+    - name: liveness
+      livenessProbe:
+        tcpSocket:
+          port: 8080
+</code></pre><p>kubernetes将尝试在指定端口上建设tcp连接，如果可以建立连接，则容器被认为是健康的。如gRPC, FTP这类服务是这种探针的主要候选者</p>
+<p>配置参数：</p>
+<ul>
+<li>initialDelaySeconds 该参数是liveness探针中需要非常注意，不能设置的太短，造成应用频繁启动，推荐使用p99启动时间作为initialDelaySeconds</li>
+<li>periodSeconds</li>
+<li>timeoutSeconds</li>
+<li>successThreshold</li>
+<li>failureThreshold</li>
+</ul>
+<h2 id="setting-resource-requests-and-limits-in-kubernetes--设置资源的请求和限制大小">Setting Resource Requests And Limits in Kubernetes  设置资源的请求和限制大小</h2>
+<p>requests和limits是kubernetes用于控制资源的机制，requests是容器保证能获得的资源，limits确保容器不会超过这个值。</p>
+<pre><code>containers:
+- name: container1
+  image: busybox
+  resources:
+    requests:
+      memory: &quot;32Mi&quot;
+      cpu: &quot;200m&quot;
+    limits:
+      memory: &quot;64Mi&quot;
+      cpu: &quot;250m&quot;
+</code></pre><p>CPU资源使用millicores定义，如果你的容器需要两个整核才能运行，则将这个值设置为 2000m，如果容器只需要1/4核，则将这个值设置为250m</p>
+<p>如果设置的值大于最大的节点的核数，那么你的pod永远无法得到调度。所以，除非的你程序是专门为多核设计的， 如科学计算，一些数据库，通常最好的做法是保持CPU的request为1或以下，然后通过更多副本来扩展，这会给系统更大的灵活性和可靠性。</p>
+<p>CPU limits，CPU认为是一个可以压缩的资源，如果你的应用开始达到CPU limits， Kubernetes会开始限制容器，这意味着你的CPU将受到人为限制，给你的应用带来潜在的更差的性能，CPU无法终止或收回。</p>
+<p>内存不像CPU，它是不可压缩的，因为没有办法控制内存的使用，如果容器超过了内存的limits，它会被终止。</p>
+<p>可以通过设置ResourceQuotas可锁定资源使用，例如一个生产空间和一个开发空间，常见的模式是不限制生产的配置，而对开发命名空间做严格的配额限制。</p>
+<pre><code>apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: demo
+spec:
+  hard:
+    requests.cpu: 500m
+    requests.memory: 100Mib
+    limits.cpu: 700m
+    limits.memory: 500Mib
+</code></pre><pre><code>apiVersion: v1
+kind: LimitRange
+metadata:
+ name: demo
+spec:
+ limits:
+ - default:
+     cpu: 600m
+     memory: 100Mib
+   defaultRequest:
+     cpu: 100m
+     memory: 50Mib
+    max:
+      cpu: 1000m
+      memory: 200Mib
+    min:
+      cpu: 10m
+      memory: 10Mib
+    type: Container
+      
+</code></pre><p>当资源有限的时候，kubernetes是通过什么规则在结束pod的：</p>
+<ol>
+<li>资源超出requests的Pods。因此，如果你的容器根本没有requests，默认情况下，他们的使用的资源超出了他们的requests，因为他们没有任何requests,所以这些是终止运行的最佳候选</li>
+<li>另外一些候选者是已超出requests但仍低于limit的Pod</li>
+<li>如果所有的Pod具有相同的优先级，kubernetes终止了一个在其request中超出最多的pod</li>
+<li>在极少的情况下，kubernetes可能会被迫终止仍处于requests范围内的pod</li>
+</ol>
+<h2 id="terminating-with-grace-优化关闭">Terminating with Grace 优化关闭</h2>
+<p>Kubernetes要终止一个容器的时候，会有以下的几个步骤：</p>
+<ul>
+<li>容器停止接收新的交易，Pod中运行的容器不会受到影响</li>
+<li>所有新的交易都会被阻止进入</li>
+</ul>
+<p>prestop钩子：它是一个特殊的命令或者HTTP请求，会被送到Pod的容器中，如果应用不能做到优雅关闭，可以使用prestop</p>
+<p>terminationGracePeriodSeconds: 60   默认值为30秒</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Pod<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>my-pod<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">containers</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>my-container<span style="color:#bbb">
+</span><span style="color:#bbb">    </span><span style="color:#000;font-weight:bold">image</span>:<span style="color:#bbb"> </span>busybox<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">terminationGracePeriodSeconds</span>:<span style="color:#bbb"> </span><span style="color:#099">60</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><p><img src="image-20200624235131297.png" alt="image-20200624235131297"></p>
+<h2 id="mapping-external-services-映射外部服务">Mapping External Services 映射外部服务</h2>
+<p>可以使用kubernetes内置的基于DNS的服务发现访问这些外部服务，如同你访问kubernetes本地服务一样</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Service<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>mongo<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">Spec</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">type</span>:<span style="color:#bbb"> </span>ClusterIp<span style="color:#bbb">
+</span><span style="color:#bbb">	</span><span style="color:#000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">		</span>- <span style="color:#000;font-weight:bold">port</span>:<span style="color:#bbb"> </span><span style="color:#099">27017</span><span style="color:#bbb">
+</span><span style="color:#bbb">		  </span><span style="color:#000;font-weight:bold">targetPort</span>:<span style="color:#bbb"> </span><span style="color:#099">72017</span><span style="color:#bbb">
+</span><span style="color:#bbb">		  
+</span><span style="color:#bbb"></span>---<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Endpoints<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>mongo<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">subsets</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>- <span style="color:#000;font-weight:bold">addresses</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  	  </span>- <span style="color:#000;font-weight:bold">ip</span>:<span style="color:#bbb"> </span><span style="color:#099">10.240.0.4</span><span style="color:#bbb">
+</span><span style="color:#bbb">  	</span><span style="color:#000;font-weight:bold">ports</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  	  </span>- <span style="color:#000;font-weight:bold">port</span>:<span style="color:#bbb"> </span><span style="color:#099">27017</span><span style="color:#bbb">
+</span><span style="color:#bbb">  	 
+</span><span style="color:#bbb"></span>---<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Service<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">name</span>:<span style="color:#bbb"> </span>mongo<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#000;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">type</span>:<span style="color:#bbb"> </span>ExternalName<span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#000;font-weight:bold">externalName</span>:<span style="color:#bbb"> </span>ds149763.mlab.com<span style="color:#bbb">
+</span><span style="color:#bbb"></span><span style="color:#998;font-style:italic"># 包含一个静态的kubernetes服务，可以将交易重定向到外部服务，这个服务会做一个内核级的简单的CNAME重定向</span><span style="color:#bbb">
+</span></code></pre></td></tr></table>
+</div>
+</div><h2 id="upgrading-your-cluster-with-zero-downtime-零停机升级群集">Upgrading your Cluster with Zero Downtime 零停机升级群集</h2>
+<p>更新包括了Master节点和Node节点两部分，Master节点首先需要进行升级，然后再进行Node节点升级。</p>
+<p>节点更新可以采用多种不同的策略：</p>
+<ul>
+<li>Rolling Update</li>
+<li>Migration with Node Pools</li>
+</ul>
+
+        </div>
+
+        
+
+
+        <div class="post-meta meta-tags border-top">
+            
+            <ul class="clearfix">
+                
+                <li><a href='http://gotomy.github.io/tags/kubernetes'>kubernetes</a></li>
+                
+            </ul>
+            
+        </div>
+
+        
+
+
+
+
+<nav class="article-nav clearfix">
+    
+    <div class="prev">
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">
+        <strong>上一篇：</strong><br>
+        <span>        Segment转向微服务后重新回归单体分享</span>
+    </a>
+   </div>
+   
+   
+</nav>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://gotomy.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">kubernetes最佳实践——来自谷歌的经验</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">Segment转向微服务后重新回归单体分享</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">SkyWalking分布式链路追踪</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">Mosh 6小时Python教程</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">Java时间处理</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">RabbitMq的工作模式</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">docker镜像国内加速</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://gotomy.github.io/categories/devops/">devops (2)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/docker/">docker (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/java/">Java (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/kubernetes/">kubernetes (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/mq/">mq (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/python/">python (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://gotomy.github.io/tags/apm/">APM</a>
+    
+    <a href="http://gotomy.github.io/tags/datetime/">DateTime</a>
+    
+    <a href="http://gotomy.github.io/tags/docker/">docker</a>
+    
+    <a href="http://gotomy.github.io/tags/java/">Java</a>
+    
+    <a href="http://gotomy.github.io/tags/kubernetes/">kubernetes</a>
+    
+    <a href="http://gotomy.github.io/tags/microservice/">microservice</a>
+    
+    <a href="http://gotomy.github.io/tags/monolithic/">monolithic</a>
+    
+    <a href="http://gotomy.github.io/tags/mq/">MQ</a>
+    
+    <a href="http://gotomy.github.io/tags/proxy/">proxy</a>
+    
+    <a href="http://gotomy.github.io/tags/python/">python</a>
+    
+    <a href="http://gotomy.github.io/tags/rabbit/">Rabbit</a>
+    
+    <a href="http://gotomy.github.io/tags/skywalking/">SkyWalking</a>
+    
+    <a href="http://gotomy.github.io/tags/time/">Time</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://gotomy.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container-footer">
+        &copy; 2020 <a href="http://gotomy.github.io">Coding人生 By gotomy</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/gotomy/maupassant-hugo" target="_blank">maupassant</a>
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+
+</html>

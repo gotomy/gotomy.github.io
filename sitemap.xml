@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/kubernetes/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/kubernetes/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/k8s/k8s_best_practice/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/</loc>
+    <lastmod>2020-06-15T22:55:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/devops/</loc>
+    <lastmod>2020-05-27T11:26:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/microservice/</loc>
+    <lastmod>2020-05-27T11:26:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/monolithic/</loc>
+    <lastmod>2020-05-27T11:26:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/devops/to_micro_and_back/</loc>
+    <lastmod>2020-05-27T11:26:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/apm/</loc>
+    <lastmod>2020-05-23T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/skywalking/</loc>
+    <lastmod>2020-05-23T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/devops/skywalking/</loc>
+    <lastmod>2020-05-23T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/python/python_6hour/</loc>
+    <lastmod>2020-05-17T12:50:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/python/</loc>
+    <lastmod>2020-05-17T12:50:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/python/</loc>
+    <lastmod>2020-05-17T12:50:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/datetime/</loc>
+    <lastmod>2019-09-10T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/java/</loc>
+    <lastmod>2019-09-10T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/java/</loc>
+    <lastmod>2019-09-10T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/java/java-time/</loc>
+    <lastmod>2019-09-10T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/time/</loc>
+    <lastmod>2019-09-10T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/mq/</loc>
+    <lastmod>2019-08-07T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/mq/</loc>
+    <lastmod>2019-08-07T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/rabbit/</loc>
+    <lastmod>2019-08-07T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/mq/rabbitmq/</loc>
+    <lastmod>2019-08-07T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/docker/</loc>
+    <lastmod>2019-07-01T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/categories/docker/</loc>
+    <lastmod>2019-07-01T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/post/docker/docker_china_proxy/</loc>
+    <lastmod>2019-07-01T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/tags/proxy/</loc>
+    <lastmod>2019-07-01T10:14:06+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/</loc>
+    <lastmod>2015-01-01T12:20:30+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/about/</loc>
+    <lastmod>2015-01-01T12:20:30+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/archives/</loc>
+  </url>
+  
+  <url>
+    <loc>http://gotomy.github.io/search/</loc>
+  </url>
+  
+</urlset>

@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Segment转向微服务后重新回归单体分享 | Coding人生</title>
+    <meta property="og:title" content="Segment转向微服务后重新回归单体分享 - Coding人生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2020-05-27T11:26:06&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2020-05-27T11:26:06&#43;08:00'>
+        
+    <meta name="Keywords" content="java, spring boot, docker, kubernetes">
+    <meta name="description" content="Segment转向微服务后重新回归单体分享">
+        
+    <meta name="author" content="gotomy">
+    <meta property="og:url" content="http://gotomy.github.io/post/devops/to_micro_and_back/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container-header">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://gotomy.github.io">
+                        Coding人生
+                    </a>
+                
+                <p class="description">唯有日积月累，方可成就非凡</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://gotomy.github.io">首页</a>
+                    
+                    <a  href="http://gotomy.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://gotomy.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 16px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 200px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents"></nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if(leftPos<220){
+                postToc.css({"width":leftPos-10,"margin-left":(0-leftPos)})
+            }
+
+            var t = postToc.offset().top,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+    })
+</script>
+    <article class="post">
+        <header class="article-info clearfix">
+            <h1>Segment转向微服务后重新回归单体分享</h1>
+            <div>
+                
+                <p class="post-reads">
+                    <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span><span>阅读</span></span>
+                </p>
+                
+                <p class="post-time">发表于：2020年5月27日</p>
+            </div>
+        </header>
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <blockquote>
+<p>本文是对&quot;To Microservices and Back Again - Why Segment Went Back to a Monolith&rdquo; 的翻译，探讨 Segment将架构演变到微服务后又从微服务退回到了单体架构的过程</p>
+</blockquote>
+<blockquote>
+<p>原文链接：https://www.infoq.com/news/2020/04/microservices-back-again/</p>
+</blockquote>
+<p>当几乎各所有工程师团队考虑架构转移到微服务的时，但微服务是否真正能带来好处是值得商榷的。Segment公司的 Alexandra Noonan分享了他们将单体架构迁移到微服务架构后，但几年后他们又迁回了单位架构的故事。使用Noonan的话说，&ldquo;没有被良好架构的微服务或者微服务没有你系统中的一些根本缺陷，这个时候由于微服务系统的复杂性而使你无法进行新产品的迭代了。&rdquo;</p>
+<p>微服务首次引入是为了解决Segment单体架构有限的故障隔离问题。然而，随着公司规模的增大，所需要集成的外部服务越来越多，支持微服务的运营开销变得难得承受。考虑到因为公司快速成长而带来的扩展痛点，公司决定重新回归一种新的单体架构模式。单体架构没有微服务架构带来的模块化、环境隔离可见性，但却解决了运营开销的主要问题，可以使工程师团队快速的回归到新特性的开发中。</p>
+<p>Noonan解释了Segment架构演进中的几个关键点，当时所面临的问题和做出的决定，这对于任何有经验的工程师来说都是比较熟悉的解释，因为只有事后才能知道当下的决定是不是正确的。Noonan解释了架构演变中每一个主要的决策点，指明意图和系统架构的每个状态。</p>
+<p>从2013年开始，Segment是单体架构的。这种架构的营运成本比较低，但缺少环境的隔离性。Segment的功能是围绕从各个不同的供应商获取数据和集成数据开展的。在单体架构中，面临着连接到一个数据提供商的后可能对所有的目的地和整个系统带来不利的影响的问题。</p>
+<p>由于这种单体架构缺少隔离性的问题，我们将单体架构迁移到微服务架构，每个服务负责一个终端的对接。微服务架构也明显的提供了系统的模块化和吞吐量，可以使团队更容易的查看队列的大小和清楚的定位问题的原因。Noonan指出，可视化在单体架构中可以现实，但在微服务中这种可视化是自然的。但是，微服务架构却带来了持续增加的运营开销和代码的重用问题。</p>
+<p>2016-2017年是Segment业务的一个高速增长期，约每3个月新增50多个接入端。为每个工作者的微服务创建一个代码管理仓库是可行的，但在规模不断扩大的时候就成为一个问题了。为相同的功能提供共享的公共程序包成为了一个瓶颈，由于测试的限制，共享代码的变量需要开发人员一周的工作时间。通过创建共享库的版本可以快速的实现共享，但这与共享代码的原始意图却是背道而驰的。</p>
+<p>Noonan指出，对所有的微服务一刀切的做法是不正确的。 即使功能不是定制需求，增加一个新的微服务需要大量的工作。不管每个服务不同的负载和CPU资源需求，只是用一个伸缩规则应用于所有的服务。所以，正确的解决方式是为每个客户的每个队列使用一个微服务来实现故障的正直隔离，但这种实现需要超过10000多个微服务。</p>
+<p>2017年，在考虑了包括失去微服务的优点带来的适应性等所有的利弊权衡后，公司决定回归单体架构。最终的架构被命名为&quot;Centrifuge&rdquo;，它每天能处理数十亿的消息数据并发送到几十个公共api中。现在采用了一个代码仓库，所有的目标工作程序都使用相同版本的共享库。更大的处理者可以更好的处理负载高峰。添加新的终端也需要再增加运营开销，部署也只需要几分钟。对业务更重要的是，他们又可以重新开始新的产品迭代。团队认为这些带来的益处是值得失去因微服务带来的模块化、隔离化和可见性这个好处的。</p>
+<p>QCon的与会者讨论这个演讲看起来是一个工程师加入了一个古老的项目。一些像“嗯，显然你不应该做他们所做的事”这类的简短评论，遭到了经验之声的反驳，他们指出，大多数决定都是根据当时掌握的最佳信息做出的。其中一个关键的收获是，花几天或几周时间做更多的分析可以避免一个需要数年才能纠正的局面。</p>
+
+        </div>
+
+        
+
+
+        <div class="post-meta meta-tags border-top">
+            
+            <ul class="clearfix">
+                
+                <li><a href='http://gotomy.github.io/tags/microservice'>microservice</a></li>
+                
+                <li><a href='http://gotomy.github.io/tags/monolithic'>monolithic</a></li>
+                
+            </ul>
+            
+        </div>
+
+        
+
+
+
+
+<nav class="article-nav clearfix">
+    
+    <div class="prev">
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">
+        <strong>上一篇：</strong><br>
+        <span>        SkyWalking分布式链路追踪</span>
+    </a>
+   </div>
+   
+   
+   <div class="next">
+    <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">
+        <strong>下一篇：</strong><br> 
+        <span>kubernetes最佳实践——来自谷歌的经验        </span>
+    </a>
+   </div>
+   
+</nav>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://gotomy.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">kubernetes最佳实践——来自谷歌的经验</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">Segment转向微服务后重新回归单体分享</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">SkyWalking分布式链路追踪</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">Mosh 6小时Python教程</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">Java时间处理</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">RabbitMq的工作模式</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">docker镜像国内加速</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://gotomy.github.io/categories/devops/">devops (2)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/docker/">docker (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/java/">Java (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/kubernetes/">kubernetes (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/mq/">mq (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/python/">python (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://gotomy.github.io/tags/apm/">APM</a>
+    
+    <a href="http://gotomy.github.io/tags/datetime/">DateTime</a>
+    
+    <a href="http://gotomy.github.io/tags/docker/">docker</a>
+    
+    <a href="http://gotomy.github.io/tags/java/">Java</a>
+    
+    <a href="http://gotomy.github.io/tags/kubernetes/">kubernetes</a>
+    
+    <a href="http://gotomy.github.io/tags/microservice/">microservice</a>
+    
+    <a href="http://gotomy.github.io/tags/monolithic/">monolithic</a>
+    
+    <a href="http://gotomy.github.io/tags/mq/">MQ</a>
+    
+    <a href="http://gotomy.github.io/tags/proxy/">proxy</a>
+    
+    <a href="http://gotomy.github.io/tags/python/">python</a>
+    
+    <a href="http://gotomy.github.io/tags/rabbit/">Rabbit</a>
+    
+    <a href="http://gotomy.github.io/tags/skywalking/">SkyWalking</a>
+    
+    <a href="http://gotomy.github.io/tags/time/">Time</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://gotomy.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container-footer">
+        &copy; 2020 <a href="http://gotomy.github.io">Coding人生 By gotomy</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/gotomy/maupassant-hugo" target="_blank">maupassant</a>
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+
+</html>

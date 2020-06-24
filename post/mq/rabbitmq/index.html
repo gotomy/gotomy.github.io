@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RabbitMq的工作模式 | Coding人生</title>
+    <meta property="og:title" content="RabbitMq的工作模式 - Coding人生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-08-07T10:14:06&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-08-07T10:14:06&#43;08:00'>
+        
+    <meta name="Keywords" content="java, spring boot, docker, kubernetes">
+    <meta name="description" content="RabbitMq的工作模式">
+        
+    <meta name="author" content="gotomy">
+    <meta property="og:url" content="http://gotomy.github.io/post/mq/rabbitmq/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container-header">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://gotomy.github.io">
+                        Coding人生
+                    </a>
+                
+                <p class="description">唯有日积月累，方可成就非凡</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://gotomy.github.io">首页</a>
+                    
+                    <a  href="http://gotomy.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://gotomy.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 16px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 200px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#rabbitmq简介">RabbitMq简介</a></li>
+    <li><a href="#rabbitmq的工作原理">RabbitMQ的工作原理</a></li>
+    <li><a href="#rabbitmq工作模式">RabbitMQ工作模式</a>
+      <ul>
+        <li><a href="#工作队列-work-queues">工作队列 Work queues</a></li>
+        <li><a href="#发布订阅-publishsubscribe">发布订阅 publish/subscribe</a></li>
+        <li><a href="#路由-routing">路由 routing</a></li>
+        <li><a href="#通配符-topics">通配符 topics</a></li>
+        <li><a href="#header转发器-header">header转发器 header</a></li>
+        <li><a href="#远程过程调用-rpc">远程过程调用 rpc</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if(leftPos<220){
+                postToc.css({"width":leftPos-10,"margin-left":(0-leftPos)})
+            }
+
+            var t = postToc.offset().top,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+    })
+</script>
+    <article class="post">
+        <header class="article-info clearfix">
+            <h1>RabbitMq的工作模式</h1>
+            <div>
+                
+                <p class="post-reads">
+                    <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span><span>阅读</span></span>
+                </p>
+                
+                <p class="post-time">发表于：2019年8月7日</p>
+            </div>
+        </header>
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <h2 id="rabbitmq简介">RabbitMq简介</h2>
+<p>MQ全称为Message Queue，即消息队列，RabbitMQ是由erlang语言开发，基于AMQP（Advanced Message Queue）高级消息队列协议实现的，它是一种应用程序之间的通信方法，消息队列在分布式系统开发中应用非常广泛。</p>
+<p>应用场景：</p>
+<ul>
+<li>任务异步处理</li>
+</ul>
+<p>将不需要同步处理并且耗时长的操作由消息队列通知消息接收方进行异步处理，提供应用程序的响应时间</p>
+<ul>
+<li>应用程序解耦合</li>
+</ul>
+<p>MQ相当于一个中介，生产方通过MQ与消费方交互，它将应用程序进行解耦合。</p>
+<p>AMQP:是一套公开的消息队列协议，最早在2003年被提出，它从协议层定义消息通信数据的标准格式，为解决MQ市场协议不统一的总是。</p>
+<h2 id="rabbitmq的工作原理">RabbitMQ的工作原理</h2>
+<p><img src="./image-20200513233452108.png" alt="image-20200513233452108"></p>
+<ul>
+<li>Broker：消息队列服务进程，此进程包括两个部分Exchange和Queue</li>
+<li>Exchange：消息队列交换机，按一定的规则将消息路由转发到某个队列，对消息进行过滤</li>
+<li>Queue：消息队列，存储消息的队列，消息达到队列并转发给指定的消费方</li>
+<li>Producer：消息生产者，即生产方客户端，生产方客户端将消息发送到MQ</li>
+<li>Consumer：消息消费者，即消费方客户端，接收MQ转发的消息</li>
+</ul>
+<h2 id="rabbitmq工作模式">RabbitMQ工作模式</h2>
+<p>RabbitMQ拥有6种工作模式。</p>
+<h3 id="工作队列-work-queues">工作队列 Work queues</h3>
+<blockquote>
+<p>一个消息只能被一个消费者接收到</p>
+</blockquote>
+<p><!-- raw HTML omitted --></p>
+<p>工作队列是指一个生产者，多个消费端共同消费同一个队列中的消息，具有如下特点：</p>
+<ul>
+<li>一个生产者将消息发给一个队列</li>
+<li>多个消费者共同监听一个队列的消息</li>
+<li>消息不能被重复消费</li>
+<li>rabbit采用轮询的方式将消息平均发送给消费者</li>
+</ul>
+<h3 id="发布订阅-publishsubscribe">发布订阅 publish/subscribe</h3>
+<blockquote>
+<p>一个消息可以被多个消费者接收到</p>
+</blockquote>
+<p><!-- raw HTML omitted --></p>
+<p>发布订阅模式下</p>
+<ul>
+<li>一个生产者将消息发给交换机</li>
+<li>与交换机绑定的有多个队列，每个消息者监听自己的队列</li>
+<li>生产者将消息发给交换机，由交换机将消息转发到此交换机的每个队列，每个绑定交换机的队列都将接收到消息</li>
+<li>如果消息发送给没有绑定队列的交换机上消息将丢失</li>
+</ul>
+<p>工作队列与发布订阅的区别：</p>
+<ul>
+<li>发布订阅可以定义一个交换机绑定多个队列，一个消息可以发送给多个队列</li>
+<li>工作队列无需定义交换机，一个消息一次只能发送给一个队列</li>
+<li>发布订阅比工作队列的功能更强大，发布订阅也可以将多个消息者监听同一个队列实现工作队列的功能</li>
+</ul>
+<h3 id="路由-routing">路由 routing</h3>
+<p><!-- raw HTML omitted --></p>
+<p>在路由模式下：</p>
+<ul>
+<li>一个交换机绑定多个队列，每个队列设置routingkey，并且一个队列可以设置多个 routingkey</li>
+<li>每个消费者监听自己的队列</li>
+<li>生产将消息发给交换机，发送消息时需要指定routingkey的值，交换机来判断该routingkey的值和哪个队列的routingkey相行装，如果相等则将消息发给该队列。</li>
+</ul>
+<p>路由模式比发布订阅模式更强大，可以通过路由模式来实现发布订阅模式。</p>
+<h3 id="通配符-topics">通配符 topics</h3>
+<p><!-- raw HTML omitted --></p>
+<p>topics 模式：</p>
+<ul>
+<li>一个交换机可以绑定多个队列，每个队列可以设置一个或多个带通配符的routingKey</li>
+<li>生产者将消息发送给交换机，交换机根据routingkey的值来匹配队列，匹配时采用通配符方式，匹配成功的将消息转发到指定队列</li>
+</ul>
+<p>routing和topics的区别：</p>
+<p>基本原理是相同的，即：生产者将消息发给交换机，交换机根据routingkey将消息转发给routingkey匹配的队列，不同之外是：routingkey的匹配方式，routing模式是相等匹配，topics模式是通配符匹配。</p>
+<p>通配符类型：</p>
+<ul>
+<li>#号：匹配一个或多个词（每个词中间以.分隔），比如：inform.#可以匹配inform.sms、inform.email、inform.email.sms</li>
+<li>*号：只能匹配一个词，比如inform.#可以匹配inform.sms、inform.email，但不能匹配inform.email.sms</li>
+</ul>
+<h3 id="header转发器-header">header转发器 header</h3>
+<p>header模式与routing不同的地方在于，header模式取消了 routingkey, 使用header中的key/value（键值对）匹配队列。</p>
+<p>案例：</p>
+<p>根据用户的通知设置去通知用户，设置接收Email的用户只接收Email，设置接收sms的用户只接收sms，设置两种通知类型都接收的则两种都有效。</p>
+<p>在生产者上队列和交换机的绑定是通过header进行绑定的。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Map<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> headers_email <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> Hashtable<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;();</span>
+headers_email<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;inform_email&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;email&#34;</span><span style="color:#000;font-weight:bold">);</span>
+Map<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> headers_sms <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> HashTable<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;();</span>
+headers_sms<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;inform_sms&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;sms&#34;</span><span style="color:#000;font-weight:bold">);</span>
+channel<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">queueBind</span><span style="color:#000;font-weight:bold">(</span>QUEUE_INFORM_EMAIL<span style="color:#000;font-weight:bold">,</span> EXCHANGE_HEADERS_INFORM<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;&#34;</span><span style="color:#000;font-weight:bold">,</span> headers_email<span style="color:#000;font-weight:bold">);</span>
+channel<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">queueBind</span><span style="color:#000;font-weight:bold">(</span>QUEUE_INFORM_SMS<span style="color:#000;font-weight:bold">,</span> EXCHANGE_HEADERS_INFORM<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;&#34;</span><span style="color:#000;font-weight:bold">,</span> header_sms<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在发通知的时候，需要指定header</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">String message <span style="color:#000;font-weight:bold">=</span> <span style="color:#d14">&#34;message&#34;</span><span style="color:#000;font-weight:bold">;</span>
+Map<span style="color:#000;font-weight:bold">&lt;</span>String<span style="color:#000;font-weight:bold">,</span> Object<span style="color:#000;font-weight:bold">&gt;</span> headers <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> HashTable<span style="color:#000;font-weight:bold">();</span>
+headers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;inform_email&#34;</span><span style="color:#000;font-weight:bold">,</span><span style="color:#d14">&#34;email&#34;</span><span style="color:#000;font-weight:bold">);</span>
+headers<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">put</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;inform_sms&#34;</span><span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;sms&#34;</span><span style="color:#000;font-weight:bold">);</span>
+AMQP<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">BasicProperties</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">Builder</span> properties <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> AMQP<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">BasicProperties</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">Builder</span><span style="color:#000;font-weight:bold">();</span>
+properties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">headers</span><span style="color:#000;font-weight:bold">(</span>headers<span style="color:#000;font-weight:bold">);</span>
+
+channel<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">basicPublish</span><span style="color:#000;font-weight:bold">(</span>EXCHANGE_HEADERS_INFORM<span style="color:#000;font-weight:bold">,</span> <span style="color:#d14">&#34;&#34;</span><span style="color:#000;font-weight:bold">,</span> properties<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">build</span><span style="color:#000;font-weight:bold">(),</span> message<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">getBytes</span><span style="color:#000;font-weight:bold">());</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="远程过程调用-rpc">远程过程调用 rpc</h3>
+<p><!-- raw HTML omitted --></p>
+<p>RPC即客户端远程调用服务端的方法，使用MQ可实现RPC的异步调用。基于Direct交换机实现。</p>
+<ul>
+<li>客户端即是生产者也是消费者，向RPC请求队列发送RPC调用消息，同时监听RPC响应队列</li>
+<li>服务端监听RPC请求队列的消息，收到消息后执行服务端的方法，得到方法返回的结果</li>
+<li>服务端将RPC方法的结果发送到RPC响应队列</li>
+</ul>
+
+        </div>
+
+        
+
+
+        <div class="post-meta meta-tags border-top">
+            
+            <ul class="clearfix">
+                
+                <li><a href='http://gotomy.github.io/tags/rabbit'>Rabbit</a></li>
+                
+                <li><a href='http://gotomy.github.io/tags/mq'>MQ</a></li>
+                
+            </ul>
+            
+        </div>
+
+        
+
+
+
+
+<nav class="article-nav clearfix">
+    
+    <div class="prev">
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">
+        <strong>上一篇：</strong><br>
+        <span>        docker镜像国内加速</span>
+    </a>
+   </div>
+   
+   
+   <div class="next">
+    <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">
+        <strong>下一篇：</strong><br> 
+        <span>Java时间处理        </span>
+    </a>
+   </div>
+   
+</nav>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://gotomy.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">kubernetes最佳实践——来自谷歌的经验</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">Segment转向微服务后重新回归单体分享</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">SkyWalking分布式链路追踪</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">Mosh 6小时Python教程</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">Java时间处理</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">RabbitMq的工作模式</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">docker镜像国内加速</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://gotomy.github.io/categories/devops/">devops (2)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/docker/">docker (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/java/">Java (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/kubernetes/">kubernetes (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/mq/">mq (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/python/">python (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://gotomy.github.io/tags/apm/">APM</a>
+    
+    <a href="http://gotomy.github.io/tags/datetime/">DateTime</a>
+    
+    <a href="http://gotomy.github.io/tags/docker/">docker</a>
+    
+    <a href="http://gotomy.github.io/tags/java/">Java</a>
+    
+    <a href="http://gotomy.github.io/tags/kubernetes/">kubernetes</a>
+    
+    <a href="http://gotomy.github.io/tags/microservice/">microservice</a>
+    
+    <a href="http://gotomy.github.io/tags/monolithic/">monolithic</a>
+    
+    <a href="http://gotomy.github.io/tags/mq/">MQ</a>
+    
+    <a href="http://gotomy.github.io/tags/proxy/">proxy</a>
+    
+    <a href="http://gotomy.github.io/tags/python/">python</a>
+    
+    <a href="http://gotomy.github.io/tags/rabbit/">Rabbit</a>
+    
+    <a href="http://gotomy.github.io/tags/skywalking/">SkyWalking</a>
+    
+    <a href="http://gotomy.github.io/tags/time/">Time</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://gotomy.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container-footer">
+        &copy; 2020 <a href="http://gotomy.github.io">Coding人生 By gotomy</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/gotomy/maupassant-hugo" target="_blank">maupassant</a>
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Java on Coding人生</title>
+    <link>http://gotomy.github.io/categories/java/</link>
+    <description>Recent content in Java on Coding人生</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-CN</language>
+    <lastBuildDate>Tue, 10 Sep 2019 10:14:06 +0800</lastBuildDate>
+    
+	<atom:link href="http://gotomy.github.io/categories/java/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Java时间处理</title>
+      <link>http://gotomy.github.io/post/java/java-time/</link>
+      <pubDate>Tue, 10 Sep 2019 10:14:06 +0800</pubDate>
+      
+      <guid>http://gotomy.github.io/post/java/java-time/</guid>
+      <description>Java的时间处理以Java8作为分水岭，可以分为java8之前版本的时间处理方式，主要包括了Date、Calendar、SimpleDateFormat等几个主要的处理类。Java8版本对时间处理进行了革命性的重构，从这个版本之后所有的时间处理类统一放在了java.time包下，由LocalDate、Time、Instant等类处理。
+本文主要是对Java的时间处理进行一个回顾总结，介绍java8版本之前的时间处理方式，非官方joda-time类库对java时间处理的增强补充和java8版本之后的时间处理。</description>
+    </item>
+    
+  </channel>
+</rss>

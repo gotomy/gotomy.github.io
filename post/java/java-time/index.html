@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Java时间处理 | Coding人生</title>
+    <meta property="og:title" content="Java时间处理 - Coding人生">
+    <meta property="og:type" content="article">
+        
+    <meta property="article:published_time" content='2019-09-10T10:14:06&#43;08:00'>
+        
+        
+    <meta property="article:modified_time" content='2019-09-10T10:14:06&#43;08:00'>
+        
+    <meta name="Keywords" content="java, spring boot, docker, kubernetes">
+    <meta name="description" content="Java时间处理">
+        
+    <meta name="author" content="gotomy">
+    <meta property="og:url" content="http://gotomy.github.io/post/java/java-time/">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href='/css/normalize.css'>
+    <link rel="stylesheet" href='/css/style.css'>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    
+
+
+    
+    
+</head>
+
+
+<body>
+    <header id="header" class="clearfix">
+    <div class="container-header">
+        <div class="col-group">
+            <div class="site-name ">
+                
+                    <a id="logo" href="http://gotomy.github.io">
+                        Coding人生
+                    </a>
+                
+                <p class="description">唯有日积月累，方可成就非凡</p>
+            </div>
+            <div>
+                <nav id="nav-menu" class="clearfix">
+                    <a class="current" href="http://gotomy.github.io">首页</a>
+                    
+                    <a  href="http://gotomy.github.io/archives/" title="归档">归档</a>
+                    
+                    <a  href="http://gotomy.github.io/about/" title="关于">关于</a>
+                    
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+
+    <div id="body">
+        <div class="container">
+            <div class="col-group">
+
+                <div class="col-8" id="main">
+                    
+<div class="res-cons">
+    <style type="text/css">
+    .post-toc {
+        position: fixed;
+        width: 200px;
+        margin-left: -210px;
+        padding: 5px 10px;
+        font-family: Athelas, STHeiti, Microsoft Yahei, serif;
+        font-size: 12px;
+        border: 1px solid rgba(0, 0, 0, .07);
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.98);
+        background-clip: padding-box;
+        -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        box-shadow: 1px 1px 2px rgba(0, 0, 0, .125);
+        word-wrap: break-word;
+        white-space: nowrap;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        z-index: 999;
+        cursor: pointer;
+        max-height: 70%;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .post-toc .post-toc-title {
+        width: 100%;
+        margin: 0 auto;
+        font-size: 16px;
+        font-weight: 400;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .post-toc .post-toc-content {
+        font-size: 15px;
+    }
+
+    .post-toc .post-toc-content>nav>ul {
+        margin: 10px 0;
+    }
+
+    .post-toc .post-toc-content ul {
+        padding-left: 20px;
+        list-style: square;
+        margin: 0.5em;
+        line-height: 1.8em;
+    }
+
+    .post-toc .post-toc-content ul ul {
+        padding-left: 15px;
+        display: none;
+    }
+
+    @media print,
+    screen and (max-width:1057px) {
+        .post-toc {
+            display: none;
+        }
+    }
+</style>
+<div class="post-toc" style="position: absolute; top: 200px;">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#java8之前的时间处理">Java8之前的时间处理</a></li>
+    <li><a href="#基于joda-time类库的时间处理">基于Joda-time类库的时间处理</a></li>
+    <li><a href="#java8之后的时间处理">Java8之后的时间处理</a>
+      <ul>
+        <li><a href="#时间的两种表示方法">时间的两种表示方法</a></li>
+        <li><a href="#java8的日期处理包">Java8的日期处理包</a></li>
+        <li><a href="#java8时间包方法全名约定">Java8时间包方法全名约定</a></li>
+        <li><a href="#localdate-localtime-localdatetime-instant">LocalDate, LocalTime, LocalDateTime, Instant</a></li>
+        <li><a href="#duration-peroid">Duration, Peroid</a></li>
+        <li><a href="#formatting-parsing">Formatting, Parsing</a></li>
+        <li><a href="#带时区的时间日期">带时区的时间日期</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var postToc = $(".post-toc");
+        if (postToc.length) {
+            var leftPos = $("#main").offset().left;
+            if(leftPos<220){
+                postToc.css({"width":leftPos-10,"margin-left":(0-leftPos)})
+            }
+
+            var t = postToc.offset().top,
+                a = {
+                    start: {
+                        position: "absolute",
+                        top: t
+                    },
+                    process: {
+                        position: "fixed",
+                        top: 20
+                    },
+                };
+            $(window).scroll(function () {
+                var e = $(window).scrollTop();
+                e < t ? postToc.css(a.start) : postToc.css(a.process)
+            })
+        }
+    })
+</script>
+    <article class="post">
+        <header class="article-info clearfix">
+            <h1>Java时间处理</h1>
+            <div>
+                
+                <p class="post-reads">
+                    <span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv"></span><span>阅读</span></span>
+                </p>
+                
+                <p class="post-time">发表于：2019年9月10日</p>
+            </div>
+        </header>
+        
+        <div class="clear" style="display: none">
+            <div class="toc-article">
+                <div class="toc-title">文章目录</div>
+            </div>
+        </div>
+        
+        <div class="post-content">
+            <p>Java的时间处理以Java8作为分水岭，可以分为java8之前版本的时间处理方式，主要包括了<code>Date</code>、<code>Calendar</code>、<code>SimpleDateFormat</code>等几个主要的处理类。Java8版本对时间处理进行了革命性的重构，从这个版本之后所有的时间处理类统一放在了java.time包下，由<code>LocalDate</code>、<code>Time</code>、<code>Instant</code>等类处理。</p>
+<p>本文主要是对Java的时间处理进行一个回顾总结，介绍java8版本之前的时间处理方式，非官方joda-time类库对java时间处理的增强补充和java8版本之后的时间处理。</p>
+<p>前两类时间处理方式，只是作一个简短的回顾，不详细扩展，重点讲解java8之后版本对时间的处理方式。</p>
+<h2 id="java8之前的时间处理">Java8之前的时间处理</h2>
+<p>自<code>java.util.Date</code>类从Java 1.0引入后，在java8之前如果需要使用jdk自带的api进行时间操作，这个类会被大量的使用。但这个Date类自从诞生之后，一直被诟病，主要包括了以下问题：</p>
+<ul>
+<li>
+<p>命名与实际不一致，该类实际上是一个从1970年的时间偏移量，但从类名上看是某天的一个日期</p>
+</li>
+<li>
+<p>构造函数参数不明确，如想获取一个2019-09-10的日期，我们需要<code>new Date(119,8,10)</code>,年份需要从（2019-1900），月份的起始序号为0</p>
+</li>
+<li>
+<p>不提供国际化，没有时区支持，需要通过引入java.util.TimeZone类</p>
+</li>
+<li>
+<p>可变性，在多线程环境下可变性带来了线程不安全问题。</p>
+</li>
+<li>
+<p>参数范围没有检验。如果构造一个<code>new Date(119,0,32)</code>，我们希望进行天范围越界异常，但实际你将能获取到2019年2月1日这天</p>
+</li>
+</ul>
+<p>由于Date类的这些问题，Calendar类在java1.1的时候被引入，解决了一些Date类的问题，但初阶效果仍不理想。</p>
+<ul>
+<li>月份还是以0以起始序号</li>
+<li>还是可变的，在线程程环境下需要小心处理</li>
+<li>没有提供快速方便时间计算，如不能方便的计算两个日期的间隔天数</li>
+<li>引入了java.text.DateFormat ，但该类仍是线程不安全</li>
+</ul>
+<p>如下的 DateFormatter代码在多线程环境的执行结果将不可预测</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">SimpleDateFormat sdf <span style="color:#000;font-weight:bold">=</span> <span style="color:#000;font-weight:bold">new</span> SimpleDateFormat<span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;yyyy-MM-dd&#34;</span><span style="color:#000;font-weight:bold">);</span>
+ExecutorService executorService <span style="color:#000;font-weight:bold">=</span> Executors<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">newFixedThreadPool</span><span style="color:#000;font-weight:bold">(</span>5<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#000;font-weight:bold">for</span> <span style="color:#000;font-weight:bold">(</span><span style="color:#458;font-weight:bold">int</span> i <span style="color:#000;font-weight:bold">=</span> 0<span style="color:#000;font-weight:bold">;</span> i <span style="color:#000;font-weight:bold">&lt;</span> 5<span style="color:#000;font-weight:bold">;</span> i<span style="color:#000;font-weight:bold">++)</span> <span style="color:#000;font-weight:bold">{</span>
+  executorService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">execute</span><span style="color:#000;font-weight:bold">(()</span> <span style="color:#000;font-weight:bold">-&gt;</span> <span style="color:#000;font-weight:bold">{</span>
+    <span style="color:#000;font-weight:bold">try</span> <span style="color:#000;font-weight:bold">{</span>
+      System<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">out</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">println</span><span style="color:#000;font-weight:bold">(</span>sdf<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">parse</span><span style="color:#000;font-weight:bold">(</span><span style="color:#d14">&#34;2019-09-10&#34;</span><span style="color:#000;font-weight:bold">));</span>
+    <span style="color:#000;font-weight:bold">}</span> <span style="color:#000;font-weight:bold">catch</span> <span style="color:#000;font-weight:bold">(</span>ParseException e<span style="color:#000;font-weight:bold">)</span> <span style="color:#000;font-weight:bold">{</span>
+      e<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">printStackTrace</span><span style="color:#000;font-weight:bold">();</span>
+    <span style="color:#000;font-weight:bold">}</span> 
+  <span style="color:#000;font-weight:bold">});</span>
+<span style="color:#000;font-weight:bold">}</span>
+executorService<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">shutdown</span><span style="color:#000;font-weight:bold">();</span>
+
+<span style="color:#000;font-weight:bold">---</span>out<span style="color:#000;font-weight:bold">---</span>
+Fri Sep 10 00<span style="color:#000;font-weight:bold">:</span>00<span style="color:#000;font-weight:bold">:</span>00 CST 1
+Tue Sep 10 00<span style="color:#000;font-weight:bold">:</span>00<span style="color:#000;font-weight:bold">:</span>00 CST 2019
+Sun Sep 10 00<span style="color:#000;font-weight:bold">:</span>00<span style="color:#000;font-weight:bold">:</span>00 CST 9099
+Sun Jun 10 00<span style="color:#000;font-weight:bold">:</span>00<span style="color:#000;font-weight:bold">:</span>00 CST 8
+Fri Sep 10 00<span style="color:#000;font-weight:bold">:</span>00<span style="color:#000;font-weight:bold">:</span>00 CST 1
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="基于joda-time类库的时间处理">基于Joda-time类库的时间处理</h2>
+<p>由于java原生时间处理方式存在的各种问题和操作的复杂性，出现了一批优秀的第三方时间处理类库，<code>joda-time</code>是其中最优秀的时间处理类库之一，在java8之前，大量的涉及时间处理的java项目大量的使用joda-time进行时间的处理。它具有以下优点：</p>
+<ul>
+<li>
+<p>线程安全，对象不可变，操作后都会返回新的对象，不像Date是可变的</p>
+</li>
+<li>
+<p>时间和日期的操作更加方法和简单</p>
+</li>
+<li>
+<p>支持ISO8601、Coptic等多种日历系统</p>
+</li>
+<li>
+<p>与JDK百分之百互操作</p>
+</li>
+<li>
+<p>可以完全代替JDK来完成时间和日期的处理</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DateTime</td>
+<td>最常用的一个类，可以方便的处理日期和时间</td>
+</tr>
+<tr>
+<td>LocalDate</td>
+<td>只包括日期，没有时区</td>
+</tr>
+<tr>
+<td>LocalTime</td>
+<td>只包括时间，没有时区</td>
+</tr>
+<tr>
+<td>LocalDateTime</td>
+<td>包含日期和时间，但与DateTime不同，只表示的当前系统的时区和默认日历系统</td>
+</tr>
+<tr>
+<td>Interval</td>
+<td>处理特定的时间跨度</td>
+</tr>
+<tr>
+<td>Duratio</td>
+<td>表示一个精确的时间跨度</td>
+</tr>
+<tr>
+<td>DateTimeFormatter</td>
+<td>时间解析和格式化处理类，基于日期与时间字符串之间的转换</td>
+</tr>
+<tr>
+<td>DateTimeFormat</td>
+<td>DateTimeFormatterr的工厂类，提供各种创建DateTimeFormatter实例方式</td>
+</tr>
+</tbody>
+</table>
+<p>具体joda-time类库的使用不详细介绍了，它是java8的时间重构提供了一个参数，在java8之后，可以看到 jdk自带的时间处理类很多是joda-time类库中的类名称是完全相同的，所实现的功能也是相同的。</p>
+<h2 id="java8之后的时间处理">Java8之后的时间处理</h2>
+<p>JSR310定义了新的日期和时间使用的规范，Java8实现了JSR310的规范，引入了全新的日期和时间处理类库。</p>
+<p>在java.time中定义的类将其日历系统基于ISO日历，这是表示日期和时间的世界标准。ISO日历遵循Gregorian规则。公历于1582年推出。</p>
+<h3 id="时间的两种表示方法">时间的两种表示方法</h3>
+<ul>
+<li>人类时间：比如年、月、日、时、分和秒</li>
+<li>机器时间：以时间线连续测量时间，从一个称为时代的起点开始，以纳秒为单位</li>
+</ul>
+<h3 id="java8的日期处理包">Java8的日期处理包</h3>
+<p>在Java8中，关于日期的处理类库统一被放在java.time包，及其子包中。</p>
+<table>
+<thead>
+<tr>
+<th>包名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>java.time</td>
+<td>该名下包括日期和时间处理的基础类：Instant, LocalDate, LocalDateTime, LocalTime, ZonedDateTime等，这些类都是不可变和线程安全的，是基于ISO日历系统，遵循Gregorian规则</td>
+</tr>
+<tr>
+<td>java.time.temporal</td>
+<td>包括了底层框架和扩展特性</td>
+</tr>
+<tr>
+<td>java.time.format</td>
+<td>格式化和解析时间和日期</td>
+</tr>
+<tr>
+<td>java.time.chrono</td>
+<td>提供对不同的日历系统的访问</td>
+</tr>
+<tr>
+<td>java.time.zone</td>
+<td>包含时区支持的类</td>
+</tr>
+</tbody>
+</table>
+<h3 id="java8时间包方法全名约定">Java8时间包方法全名约定</h3>
+<p>java8中定义了大量的方法前缀方法，统一了调用的Api。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>of</td>
+<td>静态工厂方法，用于通过参数来创建时间日期实例</td>
+<td>LocalDate.of(year,month,day)</td>
+</tr>
+<tr>
+<td>from</td>
+<td>静态工厂方法，用于通过其它的时间日期实例来创建新的时间日期对象</td>
+<td>LocalDate.from(LocalDateTime.now())</td>
+</tr>
+<tr>
+<td>to</td>
+<td>把当前时间日期对象转换成另外一个对象，可能会损失部分状态</td>
+<td>LocalDateTime.toLocalDate()<!-- raw HTML omitted -->Instant.toEpochMilli()</td>
+</tr>
+<tr>
+<td>parse</td>
+<td>静态工厂方法，用于通过日期字符串来创建时间日期对象</td>
+<td>LocalDate.parse(&ldquo;2016-07-12&rdquo;)</td>
+</tr>
+<tr>
+<td>get</td>
+<td>获取某些东西的值</td>
+<td>Period.get(ChronoUnit.YEARS)</td>
+</tr>
+<tr>
+<td>with</td>
+<td>返回一个部分状态改变了的时间日期对象拷贝</td>
+<td>LocalDateTime.now().withYear(2016).withDayOfMonth(20)</td>
+</tr>
+<tr>
+<td>plus</td>
+<td>返回一个时间增加了的时间日期对象拷贝</td>
+<td>duration.plusHours(5)</td>
+</tr>
+<tr>
+<td>minus</td>
+<td>返回一个时间减少了的时间日期对象拷贝</td>
+<td>localdate.minusDays(2)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="localdate-localtime-localdatetime-instant">LocalDate, LocalTime, LocalDateTime, Instant</h3>
+<p>这四个对象的类图如下</p>
+<p><img src="./java-time-01.png" alt="类图结构"></p>
+<ul>
+<li>LocalDate</li>
+</ul>
+<p>LocalDate代表年月日的ISO日历，是没有时区的。可以使用LocalDate跟踪重大事件，如出生日期或结婚日期</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">LocalDate date <span style="color:#000;font-weight:bold">=</span> LocalDate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">of</span><span style="color:#000;font-weight:bold">(</span>2000<span style="color:#000;font-weight:bold">,</span> Month<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">NOVEMBER</span><span style="color:#000;font-weight:bold">,</span> 20<span style="color:#000;font-weight:bold">);</span>
+
+<span style="color:#998;font-style:italic">// 当前日期的下一个星期三
+</span><span style="color:#998;font-style:italic"></span>LocalDate nextWd <span style="color:#000;font-weight:bold">=</span> date<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">with</span><span style="color:#000;font-weight:bold">(</span>TemporalAdjusters<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">next</span><span style="color:#000;font-weight:bold">(</span>DayOfWeek<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">WEDNESDAY</span><span style="color:#000;font-weight:bold">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>LocalTime</li>
+</ul>
+<p>只有时分秒，没有带时区。可以用来表示人的时间（如电影时间）或本地图片馆的开始和结束时间很有用，可以用来创建数字时钟</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">LocalTime localTime <span style="color:#000;font-weight:bold">=</span> LocalTime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">now</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>LocalDateTime</li>
+</ul>
+<p>无时区的时间类，表示年月日时分秒，是LocalDate和 LocalTime的组合。要以用来表示一个特定的事件。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">LocalDateTime date1 <span style="color:#000;font-weight:bold">=</span> LocalDateTime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">now</span><span style="color:#000;font-weight:bold">();</span>
+LocalDateTime date2 <span style="color:#000;font-weight:bold">=</span> LocalDateTime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">of</span><span style="color:#000;font-weight:bold">(</span>1994<span style="color:#000;font-weight:bold">,</span> Month<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">APPIL</span><span style="color:#000;font-weight:bold">,</span> 15<span style="color:#000;font-weight:bold">,</span> 11<span style="color:#000;font-weight:bold">,</span> 30<span style="color:#000;font-weight:bold">);</span>
+LocalDateTime date3 <span style="color:#000;font-weight:bold">=</span> LocalDateTime<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">ofInstant</span><span style="color:#000;font-weight:bold">(</span>Instant<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">now</span><span style="color:#000;font-weight:bold">(),</span> ZoneId<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">systemDefault</span><span style="color:#000;font-weight:bold">());</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="duration-peroid">Duration, Peroid</h3>
+<ul>
+<li>Duration</li>
+</ul>
+<p>测量机器时间时，Duration比较合适。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Instant t1<span style="color:#000;font-weight:bold">,</span>t2<span style="color:#000;font-weight:bold">;</span>
+<span style="color:#458;font-weight:bold">long</span> ns <span style="color:#000;font-weight:bold">=</span> Duration<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">between</span><span style="color:#000;font-weight:bold">(</span>t1<span style="color:#000;font-weight:bold">,</span>t2<span style="color:#000;font-weight:bold">).</span><span style="color:#008080">toNanos</span><span style="color:#000;font-weight:bold">();</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>ChronoUnit</li>
+</ul>
+<p>定义了测量时间的单位。在一个单位内测量一段时间，比如几天或几秒时。可以使用</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Instant current <span style="color:#000;font-weight:bold">=</span> Instant<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">now</span><span style="color:#000;font-weight:bold">();</span>
+Instant previous <span style="color:#000;font-weight:bold">=</span> current<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">minus</span><span style="color:#000;font-weight:bold">(</span>10<span style="color:#000;font-weight:bold">,</span> ChronoUnit<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">SECONDS</span><span style="color:#000;font-weight:bold">);</span>
+<span style="color:#458;font-weight:bold">long</span> between <span style="color:#000;font-weight:bold">=</span> ChronoUnit<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">MILLIS</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">between</span><span style="color:#000;font-weight:bold">(</span>previous<span style="color:#000;font-weight:bold">,</span> current<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Peroid</li>
+</ul>
+<p>Period是返回两个时间间隔的年、月、日等大距离的周期类。</p>
+<div class="highlight"><div style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4">
+<table style="border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block;"><tr><td style="vertical-align:top;padding:0;margin:0;border:0;">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+</span><span style="margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+</span></code></pre></td>
+<td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+<pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">LocalDate today <span style="color:#000;font-weight:bold">=</span> LocalDate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">now</span><span style="color:#000;font-weight:bold">();</span>
+LocalDate birthday <span style="color:#000;font-weight:bold">=</span> LocalDate<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">of</span><span style="color:#000;font-weight:bold">(</span>1960<span style="color:#000;font-weight:bold">,</span> Month<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">JANUARY</span><span style="color:#000;font-weight:bold">,</span> 1<span style="color:#000;font-weight:bold">);</span>
+
+Period p <span style="color:#000;font-weight:bold">=</span> Period<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">between</span><span style="color:#000;font-weight:bold">(</span>birthday<span style="color:#000;font-weight:bold">,</span> today<span style="color:#000;font-weight:bold">);</span>
+<span style="color:#458;font-weight:bold">long</span> p2 <span style="color:#000;font-weight:bold">=</span> ChronoUnit<span style="color:#000;font-weight:bold">.</span><span style="color:#008080">DAYS</span><span style="color:#000;font-weight:bold">.</span><span style="color:#008080">between</span><span style="color:#000;font-weight:bold">(</span>birthday<span style="color:#000;font-weight:bold">,</span> today<span style="color:#000;font-weight:bold">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="formatting-parsing">Formatting, Parsing</h3>
+<p>用于日期和字符串之间的解析和转换。</p>
+<p>DateTimeFormatter类提供了大量的预定义的格式化。</p>
+<h3 id="带时区的时间日期">带时区的时间日期</h3>
+<ul>
+<li>
+<p>ZoneId指定时区标识符并提供Instant和LocalDateTime之间转换的规则</p>
+</li>
+<li>
+<p>ZoneOffset指它格林威治/UTC时间的时区偏移量</p>
+</li>
+<li>
+<p>ZonedDateTime 使用格林威治/ UTC 的时区偏移量处理具有相应时区的日期和时间。</p>
+</li>
+<li>
+<p>OffsetDateTime 使用格林威治/ UTC 的相应时区偏移量处理日期和时间，但不包含时区 ID。</p>
+</li>
+<li>
+<p>OffsetTime 使用格林威治/ UTC 的相应时区偏移量处理时间，但不包含时区 ID。</p>
+</li>
+</ul>
+
+        </div>
+
+        
+
+
+        <div class="post-meta meta-tags border-top">
+            
+            <ul class="clearfix">
+                
+                <li><a href='http://gotomy.github.io/tags/java'>Java</a></li>
+                
+                <li><a href='http://gotomy.github.io/tags/datetime'>DateTime</a></li>
+                
+                <li><a href='http://gotomy.github.io/tags/time'>Time</a></li>
+                
+            </ul>
+            
+        </div>
+
+        
+
+
+
+
+<nav class="article-nav clearfix">
+    
+    <div class="prev">
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">
+        <strong>上一篇：</strong><br>
+        <span>        RabbitMq的工作模式</span>
+    </a>
+   </div>
+   
+   
+   <div class="next">
+    <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">
+        <strong>下一篇：</strong><br> 
+        <span>Mosh 6小时Python教程        </span>
+    </a>
+   </div>
+   
+</nav>
+    </article>
+    
+    
+
+    
+    
+</div>
+
+                </div>
+
+                <div id="secondary">
+    <section class="widget">
+        <form id="search" action='//www.google.com/search' method="get" accept-charset="utf-8" target="_blank" _lpchecked="1">
+      
+      <input type="text" name="q" maxlength="20" placeholder="Search">
+      <input type="hidden" name="sitesearch" value="http://gotomy.github.io">
+      <button type="submit" class="submit icon-search"></button>
+</form>
+    </section>
+    
+    <section class="widget">
+        <h3 class="widget-title">最近文章</h3>
+<ul class="widget-list">
+    
+    <li>
+        <a href="http://gotomy.github.io/post/k8s/k8s_best_practice/" title="kubernetes最佳实践——来自谷歌的经验">kubernetes最佳实践——来自谷歌的经验</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/to_micro_and_back/" title="Segment转向微服务后重新回归单体分享">Segment转向微服务后重新回归单体分享</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/devops/skywalking/" title="SkyWalking分布式链路追踪">SkyWalking分布式链路追踪</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/python/python_6hour/" title="Mosh 6小时Python教程">Mosh 6小时Python教程</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/java/java-time/" title="Java时间处理">Java时间处理</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/mq/rabbitmq/" title="RabbitMq的工作模式">RabbitMq的工作模式</a>
+    </li>
+    
+    <li>
+        <a href="http://gotomy.github.io/post/docker/docker_china_proxy/" title="docker镜像国内加速">docker镜像国内加速</a>
+    </li>
+    
+</ul>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">分类</h3>
+<ul class="widget-list">
+    
+    <li><a href="http://gotomy.github.io/categories/devops/">devops (2)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/docker/">docker (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/java/">Java (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/kubernetes/">kubernetes (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/mq/">mq (1)</a></li>
+    
+    <li><a href="http://gotomy.github.io/categories/python/">python (1)</a></li>
+    
+</ul>
+    </section>
+
+    <section class="widget">
+        <h3 class="widget-title">标签</h3>
+<div class="tagcloud">
+    
+    <a href="http://gotomy.github.io/tags/apm/">APM</a>
+    
+    <a href="http://gotomy.github.io/tags/datetime/">DateTime</a>
+    
+    <a href="http://gotomy.github.io/tags/docker/">docker</a>
+    
+    <a href="http://gotomy.github.io/tags/java/">Java</a>
+    
+    <a href="http://gotomy.github.io/tags/kubernetes/">kubernetes</a>
+    
+    <a href="http://gotomy.github.io/tags/microservice/">microservice</a>
+    
+    <a href="http://gotomy.github.io/tags/monolithic/">monolithic</a>
+    
+    <a href="http://gotomy.github.io/tags/mq/">MQ</a>
+    
+    <a href="http://gotomy.github.io/tags/proxy/">proxy</a>
+    
+    <a href="http://gotomy.github.io/tags/python/">python</a>
+    
+    <a href="http://gotomy.github.io/tags/rabbit/">Rabbit</a>
+    
+    <a href="http://gotomy.github.io/tags/skywalking/">SkyWalking</a>
+    
+    <a href="http://gotomy.github.io/tags/time/">Time</a>
+    
+</div>
+    </section>
+
+    
+
+    <section class="widget">
+        <h3 class="widget-title">其它</h3>
+        <ul class="widget-list">
+            <li><a href="http://gotomy.github.io/index.xml">文章 RSS</a></li>
+        </ul>
+    </section>
+</div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+    <div class="container-footer">
+        &copy; 2020 <a href="http://gotomy.github.io">Coding人生 By gotomy</a>.
+        Powered by <a rel="nofollow noreferer noopener" href="https://gohugo.io" target="_blank">Hugo</a>.
+        Theme based on <a href="https://github.com/gotomy/maupassant-hugo" target="_blank">maupassant</a>
+    </div>
+</footer>
+
+
+    
+    <script type="text/javascript">
+        window.MathJax = {
+            tex2jax: {
+                inlineMath: [['$', '$']],
+                processEscapes: true
+                }
+            };
+    </script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+<a id="rocket" href="#top"></a>
+<script type="text/javascript" src='/js/totop.js?v=0.0.0' async=""></script>
+
+
+
+    <script type="text/javascript" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+
+
+
+
+</body>
+
+</html>
